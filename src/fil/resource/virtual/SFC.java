@@ -36,12 +36,34 @@ public class SFC {
 	public ArrayList<Boolean> getServicePosition() {
 		return servicePosition;
 	}
-
-	public void setServicePosition(Service service, boolean position) {
-		this.service = service;
-		this.position = position;
-		this.listService.put(this.service,this.position); //true means edge, false means server
+	
+	public void setServicePosition (Service service, boolean position) {
+		String type = service.getServiceType();
+		switch(type) {
+		case "capture": this.capture.setBelongToEdge(position);break;
+		case "decode": this.decode.setBelongToEdge(position);break;
+		case "density": this.density.setBelongToEdge(position);break;
+		case "receive": this.receive.setBelongToEdge(position);break;
+		default: System.out.println("error at set position"); break;
+		}
 	}
+
+//	public void setServicePosition(Capture capture, boolean position) {
+//		this.capture = capture;
+//		this.capture.setBelongToEdge(position);
+//	}
+//	public void setServicePosition(Decode decode, boolean position) {
+//		this.decode = decode;
+//		this.decode.setBelongToEdge(position);
+//	}
+//	public void setServicePosition(Density density, boolean position) {
+//		this.density = density;
+//		this.density.setBelongToEdge(position);
+//	}
+//	public void setServicePosition(ReceiveDensity receive, boolean position) {
+//		this.receive = receive;
+//		this.receive.setBelongToEdge(position);
+//	}
 	
 	public double getCpuDD(int dec, int den) {
 

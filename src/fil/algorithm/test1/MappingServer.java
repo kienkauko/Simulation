@@ -14,6 +14,7 @@ public class MappingServer {
 	private ServiceMapping serviceMapping;
 	private LinkMapping linkMapping;
 	private boolean isSuccess;
+	//private Topology topo;
 	
 	public MappingServer() {
 		this.listSFC = new ArrayList<SFC>();
@@ -21,9 +22,10 @@ public class MappingServer {
 		linkMapping = new LinkMapping();
 		this.setPower(0);
 		isSuccess = false;
+		//topo = new Topology();
 	}
 	
-	public void runMapping(ArrayList<SFC> listSFC, Topology topo) {
+	public Topology runMapping(ArrayList<SFC> listSFC, Topology topo) {
 //		topo = fatTree.genFatTree(K);
 		serviceMapping = new ServiceMapping();
 		linkMapping = new LinkMapping();
@@ -36,18 +38,21 @@ public class MappingServer {
 				linkMapping.linkMappingOurAlgorithm(topo, listSFC, resultsServiceMapping, serviceMapping);
 				if(linkMapping.isSuccess()) {
 					setPower(serviceMapping.getPowerServer() + linkMapping.getPowerConsumed());
+					System.out.println("Link power: " + linkMapping.getPowerConsumed());
 					isSuccess = true;
 				} else {
 					isSuccess = false;
 				}
 			} else {
 				setPower(serviceMapping.getPowerServer() + linkMapping.getPowerConsumed());
+				System.out.println("Link power: " + linkMapping.getPowerConsumed());
 			}
 		}
 		else {
 			System.out.println("failed cmm \n");
 			isSuccess = false;
 		}
+		return topo;
 	}
 
 	public double getPower() {

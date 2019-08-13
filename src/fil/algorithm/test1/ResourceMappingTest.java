@@ -27,10 +27,8 @@ public class ResourceMappingTest {
 	static double limitLatency = 5;
 	private static Map<Rpi, ArrayList<SFC>> listRpiSFC;
 	private static int numSFCTotal;
-	private static MappingServer mappingServer;
 	
-	public ResourceMappingTest() {
-		mappingServer = new MappingServer();
+	public ResourceMappingTest() {;
 		listRpiSFC = new HashMap<>();
 		numSFCTotal = 0;
 	}
@@ -106,7 +104,7 @@ public class ResourceMappingTest {
 		topo = fatTree.genFatTree(K_PORT_SWITCH);
 		setListRpiSFC(new HashMap<>());
 		numSFCTotal = 0;
-		mappingServer = new MappingServer();
+		MappingServer mappingServer = new MappingServer();
 		
 		int numChain = 0; //capture
 		int remapping_count = 0;
@@ -240,8 +238,11 @@ public class ResourceMappingTest {
 			//sfc request to server
 			ArrayList<SFC> listSFC = new ArrayList<SFC>(); //create  a number of Pi
 			MappingServer mappingServerTemp = new MappingServer();
+			MappingServer mappingServerFinal = new MappingServer();
 			mappingServerTemp = mappingServer;
 			Topology topoTemp = new Topology();
+			Topology topoFinal = new Topology();
+			
 			topoTemp = topo;
 			
 			double totalCpuChain = 0;
@@ -250,6 +251,7 @@ public class ResourceMappingTest {
 			double minPower = 1000000;
 			double finalCPUServer = 0;
 			double finalUsedPowerPi = 0;
+			double finalPower = 0;
 			double finalTotalPower = 0;
 			double finalBandWidth = 0;
 			double powerChainServer = 0;
@@ -373,18 +375,16 @@ public class ResourceMappingTest {
 							sfc.setSfcID(i);
 							listSFCTemp.add(sfc);
 							numSFCTotal++;
-							if(listSFCTemp.isEmpty()) {
-								System.out.println("List is empty!\n");
-							}
 							//System.out.println("Size of list " +listSFCTemp.size()+"\n");
-							
 							listSFCTemp.get(numSFC).setServicePosition(capture, true);
 							listSFCTemp.get(numSFC).setServicePosition(receive, false);
 							if(numOffDecode < offDecode) {
 								listSFCTemp.get(numSFC).setServicePosition(decode, false);
+								System.out.println("Off Decode may lan???");
 							}
 							if(numOffDensity < offDensity) {
 								listSFCTemp.get(numSFC).setServicePosition(density, false);
+								System.out.println("Off Density may lan????????????");
 							}
 							numOffDecode++;
 							numOffDensity++;
@@ -434,8 +434,10 @@ public class ResourceMappingTest {
 								totalNumChain = numChain;
 								powerChainPi = totalNumChain*capture.getPower() +(totalNumChain - offDecode)*decode.getPower() + (totalNumChain - offDensity)*density.getPower();
 								
+								mappingServerTemp = mappingServer;
+								topoTemp = topo;
 //								run mapping server
-								mappingServerTemp.runMapping(listSFCTemp, topoTemp);
+								topoTemp = mappingServerTemp.runMapping(listSFCTemp, topoTemp);
 								
 								if(mappingServerTemp.isSuccess()) {
 									/////////////
@@ -454,6 +456,7 @@ public class ResourceMappingTest {
 										break MAP_LOOP;
 									}
 								}
+								
 								System.out.println("Power server "+ powerChainServer +" Power Pi: " +powerChainPi+ "\n");
 								totalPower = powerChainPi + powerChainServer;
 								System.out.println("Total sysyem power is " + totalPower + " \n");
@@ -465,18 +468,21 @@ public class ResourceMappingTest {
 									if (totalNumChain <= numChain_temp) { // case after remap nothing changes
 										piState[i] = false;
 									}
-									
+									topoFinal = topoTemp;
+									mappingServerFinal = mappingServerTemp;
 									finalNumChain = totalNumChain;
 									finalChainReject = requestNumChain - finalNumChain;
 									finalCPUServer = cpuServer;
 									finalUsedPowerPi = powerChainPi;
 									finalBandWidth = totalBandwidth;
 									finalPowerServer = powerChainServer;
+									finalPower = totalPower;
 									finalCPUPi = cpuPi;
 									finalOffDecode = offDecode;
 									finalOffDensity = offDensity;
 									
 									//mapped listSFC
+									
 									listSFC = listSFCTemp;
 								}
 							} else {
@@ -516,10 +522,13 @@ public class ResourceMappingTest {
 				sumMapRequest += finalNumChain; //num of accepted request of a Pi
 				
 //				gan lai mapping server
-				mappingServer = mappingServerTemp;
-				topo = topoTemp;
-				System.out.println("sumLoadPi get Used "+ listRpi.get(i).getUsedCPU() + " \n");
-				System.out.println("sumLoadPi ..." +sumLoadPi+" finalCpuPi " + finalCPUPi + "\n");
+				mappingServer = mappingServerFinal;
+				topo = topoFinal;
+				topoTemp = topoFinal;
+				
+				System.out.println("Final power finalPower " + finalPower);
+//				System.out.println("sumLoadPi get Used "+ listRpi.get(i).getUsedCPU() + " \n");
+//				System.out.println("sumLoadPi ..." +sumLoadPi+" finalCpuPi " + finalCPUPi + "\n");
 				totalChainSystem_temp += finalNumChain; // num of accepted request all over the systen
 				totalChainReject_temp += finalChainReject;
 				

@@ -3,6 +3,7 @@ package fil.resource.virtual;
 public class Density extends Service {
 	public Density(String name, int sfcID) {
 		this.setNameService(name);
+		this.setServiceType("density");
 //		this.setChainID(chainID);
 //		this.setRequestID(requestID);
 //		if(belongToEdge == true) {
@@ -15,6 +16,7 @@ public class Density extends Service {
 		this.setSfcID(sfcID);
 	}
 	public Density() {
+		this.setServiceType("density");
 		this.setCpu_pi(13.6); //CPU usage when running on Pi
 
 		this.setCpu_server(6.5);; //CPU usage when running on server

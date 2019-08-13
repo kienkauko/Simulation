@@ -9,6 +9,7 @@ package fil.resource.virtual;
 public class Service {
 
 	private String nameService;
+	private String serviceType;
 	private double cpu;
 	private double bandwidth;
 	private double power;
@@ -98,6 +99,14 @@ public class Service {
 
 	public void setSfcID(int sfcID) {
 		this.sfcID = sfcID;
+	}
+
+	public String getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
 	}
 
 }

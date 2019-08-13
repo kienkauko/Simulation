@@ -187,7 +187,9 @@ public class ServiceMapping {
 								//setCPu Server
 								entry.getValue().setUsedCPUServer(cpuSFCRemain);
 								//change position state
-								sfcRemain.setServicePosition(sfcRemain.getService(i), true);
+								Service service = new Service();
+								service = sfcRemain.getService(i);
+								sfcRemain.setServicePosition(service, true);
 								previousService = i-1;   //service truoc no
 								//set sfc belong to server
 								listSFCServer.put(sfcRemain, entry.getValue());
