@@ -1,7 +1,7 @@
 package fil.resource.substrate;
 
 public class PhysicalServer {
-	final double CPU = 100*64; //100%
+	final double CPU = 100; //100%
 	private String name;
 	private double remainCPU;
 	private double usedCPUServer;
@@ -17,6 +17,13 @@ public class PhysicalServer {
 //		this.ram = RAM;
 //		this.name=name;
 		//this.listService = new LinkedList<>();
+	}
+	public PhysicalServer(String name) {
+		this.remainCPU = CPU;
+		this.usedCPUServer = 0;
+		this.setUsedCPUServer(0);
+		this.powerServer = 0;
+		this.name=name;
 	}
 
 	public void setCpu(double cpu) {

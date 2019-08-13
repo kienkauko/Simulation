@@ -12,12 +12,19 @@ public class Service {
 	private double cpu;
 	private double bandwidth;
 	private double power;
-//	private double ram;
-//	private double memory;
 	private int requestID;
-	private int chainID;
+	private int sfcID;
 	private boolean belongToEdge;
 	private double cpu_pi;
+	private double cpu_server;
+	
+	public Service() {
+		this.setNameService("");
+		this.cpu = 0;
+		this.setRequestID(0);
+		this.setBelongToEdge(true);
+	}
+	
 	public double getCpu_pi() {
 		return cpu_pi;
 	}
@@ -33,39 +40,6 @@ public class Service {
 	public void setCpu_server(double cpu_server) {
 		this.cpu_server = cpu_server;
 	}
-
-	private double cpu_server;
-	/**
-	 * Constructs virtual machine
-	 */
-	public Service() {
-		this.setNameService("");
-		this.cpu = 0;
-		this.setChainID(0);
-		this.setRequestID(0);
-		this.setBelongToEdge(true);
-	}
-
-	/**
-	 * Constructs virtual machine
-	 * 
-	 * @param nameVM
-	 *            Name of virtual machine
-	 * @param CPU
-	 *            CPU capacity of virtual machine
-	 * @param memory
-	 *            Memory capacity of virtual machine
-	 */
-
-//	public Service(String nameService, double cpu, int requestID, int chainID, boolean belongToEdge, double bandwidth) {
-//		this.setNameService(nameService);
-//		this.cpu = cpu;
-//		this.setRequestID(requestID);
-//		this.setChainID(chainID);
-//		this.setBelongToEdge(belongToEdge);
-//		this.setBandwidth(bandwidth);
-//	}
-
 
 	public double getCPU() {
 		return cpu;
@@ -89,14 +63,6 @@ public class Service {
 
 	public void setRequestID(int requestID) {
 		this.requestID = requestID;
-	}
-
-	public int getChainID() {
-		return chainID;
-	}
-
-	public void setChainID(int chainID) {
-		this.chainID = chainID;
 	}
 
 	public boolean isBelongToEdge() {
@@ -124,6 +90,14 @@ public class Service {
 
 	public void setPower(double power) {
 		this.power = power;
+	}
+
+	public int getSfcID() {
+		return sfcID;
+	}
+
+	public void setSfcID(int sfcID) {
+		this.sfcID = sfcID;
 	}
 
 }

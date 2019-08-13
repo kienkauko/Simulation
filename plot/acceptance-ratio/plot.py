@@ -14,17 +14,17 @@ y3 = data[:,5] #label set
 yDP = np.loadtxt('acceptanceRatioDP.txt', usecols=[0])
 xDP = np.loadtxt('totalLoadEdgeDP.txt', usecols=[0])
 bwDP = np.loadtxt('totalBandwidthDP.txt', usecols=[0])
-zDP = (bwDP/1.7 + xDP)/160
+zDP = (bwDP + xDP)/200
 
 x1 = np.loadtxt('totalLoadEdge.txt', usecols=[0])
 y1 = np.loadtxt('totalAcceptance.txt', usecols=[0])
 bw = np.loadtxt('totalBwEdge.txt', usecols=[0])
-z1 = (bw/1.7 + x1)/160
+z1 = (bw + x1)/200
 
 x2 = np.loadtxt('totalLoadEdgeGR.txt', usecols=[0])
 y2 = np.loadtxt('acceptanceRatioGR.txt', usecols=[0])
 bwGR = np.loadtxt('totalBandwidthGR.txt', usecols=[0])
-z2 = (bwGR/1.7 + x2)/160
+z2 = (bwGR + x2)/200
 
 plt.plot(z1, y1, color = 'r', label = "Proposed algorithm") 
 plt.plot(z2, y2, color = 'b', label = "Greedy algorithm") 

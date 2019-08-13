@@ -148,7 +148,7 @@ public class ResourceMapping {
 		double sumBwPi = 0;
 		double totalPowerPi=0;
 		
-		ChainRequest chainRequest = new ChainRequest(0, 3);
+		ChainRequest chainRequest = new ChainRequest(1, 1);
 		ArrayChain = new ArrayList<Integer>(100);
 		ArrayChain = chainRequest.getNumChain();  //return array with 100 objects
 		

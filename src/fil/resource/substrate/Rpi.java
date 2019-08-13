@@ -4,7 +4,7 @@ package fil.resource.substrate;
 import java.util.LinkedList;
 import fil.resource.virtual.*;
 public class Rpi {
-	final static double CPU = 102;
+	final static double CPU = 100;
 	final static double BW = 100;
 	final static double CPU_TH = 80;
 	private double remainCPU;
