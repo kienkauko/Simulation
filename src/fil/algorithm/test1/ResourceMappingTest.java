@@ -437,7 +437,7 @@ public class ResourceMappingTest {
 								mappingServerTemp = mappingServer;
 								topoTemp = topo;
 //								run mapping server
-								topoTemp = mappingServerTemp.runMapping(listSFCTemp, topoTemp);
+								topoTemp = mappingServerTemp.runMapping(listSFCTemp, topoTemp, totalBandwidth);
 								
 								if(mappingServerTemp.isSuccess()) {
 									/////////////
@@ -608,6 +608,8 @@ public class ResourceMappingTest {
 	}
 //	System.out.println("Server remain " + physicalServer.getRemainCPU() + " \n");
 	}
+	
+	
 
 	public static Map<Rpi, ArrayList<SFC>> getListRpiSFC() {
 		return listRpiSFC;

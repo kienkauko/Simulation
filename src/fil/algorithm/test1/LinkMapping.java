@@ -1,12 +1,14 @@
 package fil.algorithm.test1;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import fil.resource.substrate.LinkPhyEdge;
 import fil.resource.substrate.PhysicalServer;
@@ -48,16 +50,18 @@ public class LinkMapping {
 		
 		Service serviceA = new Service();
 		Service serviceB = new Service();
-		VirtualLink vLink = new VirtualLink(serviceB, serviceA, serviceB.getBandwidth());
-		listVirLink.add(vLink);
+		
 		int i = 0;
 		for(Entry<Service, PhysicalServer> entry : resultsServiceMapping.entrySet()) {
-			System.out.println("dit me may lan 2 \n");
 			if(i == 0) {
 				serviceA = entry.getKey();
 			}
 			if(i == 1) {
 				serviceB = entry.getKey();
+				
+				VirtualLink vLink = new VirtualLink(serviceB, serviceA, serviceB.getBandwidth());
+				listVirLink.add(vLink);
+				
 				PhysicalServer phy1 = resultsServiceMapping.get(serviceA);
 				PhysicalServer phy2 = resultsServiceMapping.get(serviceB);
 				
@@ -66,8 +70,7 @@ public class LinkMapping {
 				SubstrateSwitch edgeSwitch1 = listLinkServers.get(phy1);
 				SubstrateSwitch edgeSwitch2 = listLinkServers.get(phy2);
 				
-				if (!checkPhyEdge(topo, phy1, edgeSwitch1, phy2, edgeSwitch2, serviceB.getBandwidth(),listPhyEdge))
-				{
+				if (!checkPhyEdge(topo, phy1, edgeSwitch1, phy2, edgeSwitch2, serviceB.getBandwidth(),listPhyEdge)) {
 					break;
 //					continue;
 				}
@@ -214,6 +217,101 @@ public class LinkMapping {
 		}
 		return topo;
 	}
+	
+	public Topology linkMappingCoreServer(Topology topo, Map<Integer, PhysicalServer> listPhy, double bandwidth) {
+		double powerTemp = getPower(topo);
+		LinkedList<SubstrateLink> listLinkBandwidth = topo.getLinkBandwidth();
+		LinkedList<LinkPhyEdge> listPhyEdge = topo.getListLinkPhyEdge();
+		Map<PhysicalServer, SubstrateSwitch> listLinksServer = topo.getListLinksServer();
+		LinkedList<LinkPhyEdge> listLinkPhyEdge = topo.getListLinkPhyEdge();
+		Map<SubstrateSwitch, LinkedList<SubstrateSwitch>> listAggConnectEdge = topo.getListAggConnectEdge();
+		Map<SubstrateSwitch, LinkedList<SubstrateSwitch>> listCoreConnectAggMap = topo.getListCoreConnectAgg();
+		boolean check = false;
+		
+		Collection<PhysicalServer> listPhysical = listPhy.values();
+		
+		for(PhysicalServer phy : listPhysical) {
+			SubstrateSwitch edgeSwitch1 = listLinksServer.get(phy);
+			SubstrateSwitch substrateAggr = new SubstrateSwitch();
+			SubstrateSwitch substrateCore = new SubstrateSwitch();
+			//find aggregation switch
+			for(SubstrateSwitch substrateAggTemp : listAggConnectEdge.keySet()) {
+				for(SubstrateSwitch substateEdgeTemp : listAggConnectEdge.get(substrateAggTemp)) {
+					if(substateEdgeTemp.equals(edgeSwitch1)) {
+						substrateAggr = substrateAggTemp;
+					}
+				}
+			}
+			
+			//find core switch
+			for(SubstrateSwitch substrateCoreTemp : listCoreConnectAggMap.keySet()) {
+				for(SubstrateSwitch substateAggTemp : listCoreConnectAggMap.get(substrateCoreTemp)) {
+					if(substateAggTemp.equals(substrateAggr)) {
+						substrateCore = substateAggTemp;
+						
+						//set bandwidth core to aggregation
+						for(SubstrateLink link : listLinkBandwidth) {
+							if(link.getStartSwitch().equals(substrateCore) && link.getEndSwitch().equals(substrateAggr)) {
+								SubstrateLink linkAdd = new SubstrateLink();
+								linkAdd = link;
+								listLinkBandwidth.remove(link);
+								linkAdd.setBandwidth(link.getBandwidth() - bandwidth);
+								listLinkBandwidth.add(linkAdd);
+							} else if(link.getStartSwitch().equals(substrateAggr) && link.getEndSwitch().equals(substrateCore)) {
+								SubstrateLink linkAdd = new SubstrateLink();
+								linkAdd = link;
+								listLinkBandwidth.remove(link);
+								linkAdd.setBandwidth(link.getBandwidth() - bandwidth);
+								listLinkBandwidth.add(linkAdd);
+							}
+						}
+						//set bandwidth agg to edge
+						
+						for(SubstrateLink link : listLinkBandwidth) {
+							if(link.getStartSwitch().equals(edgeSwitch1) && link.getEndSwitch().equals(substrateAggr)) {
+								SubstrateLink linkAdd = new SubstrateLink();
+								linkAdd = link;
+								listLinkBandwidth.remove(link);
+								linkAdd.setBandwidth(link.getBandwidth() - bandwidth);
+								listLinkBandwidth.add(linkAdd);
+							} else if(link.getStartSwitch().equals(substrateAggr) && link.getEndSwitch().equals(edgeSwitch1)) {
+								SubstrateLink linkAdd = new SubstrateLink();
+								linkAdd = link;
+								listLinkBandwidth.remove(link);
+								linkAdd.setBandwidth(link.getBandwidth() - bandwidth);
+								listLinkBandwidth.add(linkAdd);
+							}
+						}
+						
+						//set bandwidth edge switch to physical server
+						for(LinkPhyEdge link : listLinkPhyEdge) {
+							if(link.getEdgeSwitch().equals(edgeSwitch1) && link.getPhysicalServer().equals(phy)) {
+								LinkPhyEdge linkAdd = new LinkPhyEdge();
+								linkAdd = link;
+								listLinkPhyEdge.remove(link);
+								linkAdd.setBandwidth(link.getBandwidth() - bandwidth);
+								listLinkPhyEdge.add(linkAdd);
+							}
+						}
+						topo.setLinkBandwidth(listLinkBandwidth);
+						topo.setListLinkPhyEdge(listPhyEdge);
+						check = true;
+						System.out.println("Already mapped link from core to server.");
+					}
+				}
+			}
+		}
+		if(check == false) {
+			isSuccess = false;
+			topo= reverseLinkMapping(topo, resultsLinkMapping);
+			reversePhyLinkMapping(topo);
+			powerConsumed = getPower(topo)-powerTemp;
+		} else {
+			powerConsumed = getPower(topo)-powerTemp;
+		}
+		return topo;
+	}
+	
 	
 	public LinkedList<SubstrateLink> MapLink(LinkedList<SubstrateSwitch> path, LinkedList<SubstrateLink> listLinkBandwidthTemp, double bandwidth)
 	{

@@ -12,6 +12,12 @@ public class LinkPhyEdge {
 		this.bandwidth = bandwidth;
 //		this.type= type;
 	}
+	public LinkPhyEdge() {
+		physicalServer = new PhysicalServer();
+		edgeSwitch = new SubstrateSwitch();
+		bandwidth = 0;
+		// TODO Auto-generated constructor stub
+	}
 	public PhysicalServer getPhysicalServer() {
 		return physicalServer;
 	}

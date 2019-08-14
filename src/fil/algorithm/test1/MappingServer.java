@@ -25,7 +25,7 @@ public class MappingServer {
 		//topo = new Topology();
 	}
 	
-	public Topology runMapping(ArrayList<SFC> listSFC, Topology topo) {
+	public Topology runMapping(ArrayList<SFC> listSFC, Topology topo, double bandwidthDemand) {
 //		topo = fatTree.genFatTree(K);
 		serviceMapping = new ServiceMapping();
 		linkMapping = new LinkMapping();
@@ -34,6 +34,9 @@ public class MappingServer {
 		if(serviceMapping.isSuccess()) {
 			System.out.println("Success service mapping! \n");
 			isSuccess = true;
+			Map<Integer, PhysicalServer> listPhy = serviceMapping.getListServerUsed();
+			linkMapping.linkMappingCoreServer(topo, listPhy, bandwidthDemand);
+			
 			if(!serviceMapping.getNeedLinkMapping().isEmpty()) {
 				linkMapping.linkMappingOurAlgorithm(topo, listSFC, resultsServiceMapping, serviceMapping);
 				if(linkMapping.isSuccess()) {

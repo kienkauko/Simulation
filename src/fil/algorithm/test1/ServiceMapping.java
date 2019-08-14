@@ -104,28 +104,14 @@ public class ServiceMapping {
 					}
 				}
 				
-				if(serviceCount == 1) { // only Receive is mapped to cloud
-					ArrayList<SFC> listNumReceive = new ArrayList<>();
-					if(!numReceiveServer.containsKey(entry.getValue())) {
-						listNumReceive.add(sfc);
-						numReceiveServer.put(entry.getValue(), listNumReceive);
-					} else {
-						int numReceiveIndepend = numReceiveServer.get(entry.getValue()).size();
-						numReceiveIndepend++;
-						listNumReceive = numReceiveServer.get(entry.getValue());
-						listNumReceive.add(sfc);
-						numReceiveServer.put(entry.getValue(), listNumReceive); // number of independent receive in a server
-					}
-				}
 				
 				if(cpuSFC <= entry.getValue().getRemainCPU()) { // enough cpu to map
 					listMappedSFC.add(sfc);
 					satisfied = true;
 					//add to list sfc belong to a server
-					//System.out.println("dit me may \n");
-					listSFCServer.put(sfc, entry.getValue());
 					System.out.println("This sfc is running at server " + entry.getValue().getName() + " with CPU " + cpuSFC);
 					entry.getValue().setUsedCPUServer(cpuSFC);
+					listSFCServer.put(sfc, entry.getValue());
 					numService += serviceCount; // total services run on cloud
 					if(!listRemainSFC.isEmpty()) {                                                                                                
 						listRemainSFC.remove(sfc);
@@ -141,6 +127,24 @@ public class ServiceMapping {
 					notDoneAll = true; //not mapping all sfc
 					listRemainSFC.add(sfc); //list not mapping
 				}
+				
+				if(serviceCount == 1) { // only Receive is mapped to cloud
+					
+					//lap di lap lai nhieu lan sau moi lan thu map
+					
+					ArrayList<SFC> listNumReceive = new ArrayList<>();
+					if(!numReceiveServer.containsKey(entry.getValue())) {
+						listNumReceive.add(sfc);
+						numReceiveServer.put(entry.getValue(), listNumReceive);
+					} else {
+						int numReceiveIndepend = numReceiveServer.get(entry.getValue()).size();
+						numReceiveIndepend++;
+						listNumReceive = numReceiveServer.get(entry.getValue());
+						listNumReceive.add(sfc);
+						numReceiveServer.put(entry.getValue(), listNumReceive); // number of independent receive in a server
+					}
+				}
+				
 			}
 			
 			///not done all map to next server
